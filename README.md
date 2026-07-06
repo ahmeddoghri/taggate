@@ -8,6 +8,10 @@
 ![deps](https://img.shields.io/badge/runtime%20deps-none-success)
 ![license](https://img.shields.io/badge/license-MIT-black)
 
+> **Auto-tag the confident cases; escalate only the genuinely ambiguous ones.**
+> In the benchmark, confidence-gating lifts accuracy from **75% to 100%** by
+> routing the ambiguous minority to a human. Zero deps: `npm run eval`.
+
 An auto-tagging agent that always guesses is wrong exactly as often as it's
 overconfident. TagGate instead scores its own confidence as the **margin**
 between its top and runner-up category — not just "did I find a match" — and
