@@ -2,6 +2,7 @@
 
 **Confidence-gated multi-agent tagging with human-in-the-loop escalation.**
 
+![CI](https://github.com/ahmeddoghri/taggate/actions/workflows/ci.yml/badge.svg)
 ![tests](https://img.shields.io/badge/tests-8%20passing-brightgreen)
 ![typescript](https://img.shields.io/badge/typescript-5.6-blue)
 ![deps](https://img.shields.io/badge/runtime%20deps-none-success)
@@ -45,6 +46,13 @@ items never need a person, but the ones that do, get one.
 git clone https://github.com/ahmeddoghri/taggate
 cd taggate && npm install
 npm run example
+```
+
+Or with Docker:
+
+```bash
+docker build -t taggate .
+docker run --rm taggate
 ```
 
 ## Tag a catalog
