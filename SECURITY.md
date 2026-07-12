@@ -19,7 +19,8 @@ remain anonymous.
 
 ## Scope notes
 
-`taggate` has no runtime dependencies and makes no network calls on its own.
-When you wire in your own model or tagging backend, that component's security
-posture is your responsibility — validate and sanitize any untrusted content
-you route through the pipeline.
+`taggate` has no runtime dependencies and makes no network calls on its
+own, so there isn't much attack surface until you add some. When you wire
+in your own model or tagging backend, that component's security posture
+is your responsibility. Validate and sanitize any untrusted content you
+route through the pipeline.

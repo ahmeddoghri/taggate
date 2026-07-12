@@ -8,21 +8,28 @@
 ![deps](https://img.shields.io/badge/runtime%20deps-none-success)
 ![license](https://img.shields.io/badge/license-MIT-black)
 
-> **Auto-tag the confident cases; escalate only the genuinely ambiguous ones.**
-> In the benchmark, confidence-gating lifts accuracy from **75% to 100%** by
-> routing the ambiguous minority to a human. Zero deps: `npm run eval`.
+> **Auto-tag the confident cases, escalate only the genuinely ambiguous
+> ones.** In the benchmark, confidence-gating lifts accuracy from **75%
+> to 100%** by routing the ambiguous minority to a human. Zero deps:
+> `npm run eval`.
 
-An auto-tagging agent that always guesses is wrong exactly as often as it's
-overconfident. TagGate instead scores its own confidence as the **margin**
-between its top and runner-up category — not just "did I find a match" — and
-routes anything below threshold to a human, instead of silently mislabeling
-genuinely ambiguous items (a "smart watch band" is legitimately both
-electronics and apparel; no keyword scorer should force a confident guess
-there).
+You've worked with the intern who's never once said "I'm not sure." Every
+answer arrives with total conviction, whether it's right or dead wrong.
+An auto-tagger that always guesses has the same personality disorder: it
+is wrong exactly as often as it's overconfident, and it never tells you
+which one it's being right now.
 
-Runs with **zero runtime dependencies and zero API keys** (a deterministic
-keyword-overlap tagger). Swap in a real LLM by implementing the same
-`Tagger` interface — the confidence-gating and escalation logic don't change.
+TagGate scores its own confidence as the **margin** between its top and
+runner-up category, not just "did I find a match," and routes anything
+below threshold to a human instead of silently mislabeling something
+genuinely ambiguous. A "smart watch band" is legitimately both
+electronics and apparel. No keyword scorer should be forcing a confident
+guess there, and neither should you.
+
+Runs with **zero runtime dependencies and zero API keys** (a
+deterministic keyword-overlap tagger). Swap in a real LLM by implementing
+the same `Tagger` interface. The confidence-gating and escalation logic
+don't change.
 
 ---
 
@@ -39,10 +46,12 @@ always_auto              75%                0%
 confidence_gated        100%               42%
 ```
 
-Always-auto-tagging gets the genuinely ambiguous items wrong a quarter of the
-time. Confidence-gating escalates only the hard 42% to a human reviewer and
-reaches 100% accuracy — the same shape as a real ops tagging pipeline: most
-items never need a person, but the ones that do, get one.
+Always-auto-tagging gets the genuinely ambiguous items wrong a quarter of
+the time, with the same confident tone as everything else. Confidence
+gating escalates only the hard 42% to a human reviewer and reaches 100%
+accuracy. Same shape as a real ops tagging pipeline: most items never
+need a person, but the ones that do, actually get one instead of a
+guess wearing a confident voice.
 
 ## Install
 
@@ -72,8 +81,8 @@ const result = pipeline.process({
   trueCategory: "apparel",
 });
 
-console.log(result.decision.kind);     // "escalated" -- genuinely ambiguous
-console.log(result.finalCategory);     // "apparel" -- from the human reviewer
+console.log(result.decision.kind);     // "escalated": genuinely ambiguous
+console.log(result.finalCategory);     // "apparel": from the human reviewer
 ```
 
 ## How it works
@@ -88,10 +97,11 @@ TaggingPipeline.process(product)
   └─ else                      -> escalate to HumanReviewer
 ```
 
-Confidence isn't just "how strong was the top match" — a category that wins
-1-to-0 with no real competition should score differently than one that wins
-5-to-4. The margin-based score means a genuinely contested item can't sneak
-past the gate just because it happened to have *a* keyword hit.
+Confidence isn't just "how strong was the top match." A category that
+wins 1-to-0 with no real competition should score differently than one
+that wins 5-to-4. The margin-based score means a genuinely contested item
+can't sneak past the gate just because it happened to have *a* keyword
+hit somewhere.
 
 ## Bring your own tagger
 
@@ -103,9 +113,9 @@ class MyLLMTagger implements Tagger {
 new TaggingPipeline(new MyLLMTagger(), myReviewQueue, 0.6);
 ```
 
-`HumanReviewer` is equally pluggable — `OracleReviewer` is a test stand-in;
-swap in a real review queue (Slack approval, a ticketing system) for
-production.
+`HumanReviewer` is equally pluggable. `OracleReviewer` is a test
+stand-in; swap in a real review queue (Slack approval, a ticketing
+system) for production.
 
 ## Tests
 
@@ -115,7 +125,7 @@ npm install && npm test      # 8 passing
 
 ## More in this series
 
-Nine small, dependency-light, benchmarked tools for LLM/ML infrastructure — each reproduces its headline number locally with no API keys:
+Nine small, dependency-light, benchmarked tools for LLM/ML infrastructure. Each one reproduces its headline number locally with no API keys:
 
 [agentmem](https://github.com/ahmeddoghri/agentmem) · [rubricagent](https://github.com/ahmeddoghri/rubricagent) · [clarifyrag](https://github.com/ahmeddoghri/clarifyrag) · [churnfm](https://github.com/ahmeddoghri/churnfm) · [citebench](https://github.com/ahmeddoghri/citebench) · [guardrail-gate](https://github.com/ahmeddoghri/guardrail-gate) · [tablextract](https://github.com/ahmeddoghri/tablextract) · [vllm-cost-router](https://github.com/ahmeddoghri/vllm-cost-router)
 

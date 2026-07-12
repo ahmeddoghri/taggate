@@ -11,9 +11,9 @@ npm test
 
 ## Before opening a pull request
 
-- Keep changes focused; one logical change per PR.
-- Add or update tests for any behaviour you change — CI runs the typecheck,
-  tests, and build on Node 18, 20, and 22.
+- Keep changes focused. One logical change per PR, not a drive-by rewrite.
+- Add or update tests for any behaviour you change. CI runs the typecheck,
+  tests, and build on Node 18, 20, and 22, so it will find you.
 - Run the full local check before pushing:
   ```bash
   npx tsc --noEmit && npm test && npm run build
