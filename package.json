@@ -11,6 +11,7 @@
     "prepublishOnly": "npm run build",
     "test": "vitest run",
     "eval": "tsx src/eval.ts",
+    "eval:v2": "tsx src/eval_v2.ts",
     "example": "tsx examples/quickstart.ts"
   },
   "keywords": ["llm", "agents", "tagging", "human-in-the-loop", "confidence", "langgraph", "ai"],

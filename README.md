@@ -3,7 +3,7 @@
 **Confidence-gated multi-agent tagging with human-in-the-loop escalation.**
 
 ![CI](https://github.com/ahmeddoghri/taggate/actions/workflows/ci.yml/badge.svg)
-![tests](https://img.shields.io/badge/tests-8%20passing-brightgreen)
+![tests](https://img.shields.io/badge/tests-29%20passing-brightgreen)
 ![typescript](https://img.shields.io/badge/typescript-5.6-blue)
 ![deps](https://img.shields.io/badge/runtime%20deps-none-success)
 ![license](https://img.shields.io/badge/license-MIT-black)
@@ -12,6 +12,13 @@
 > ones.** In the benchmark, confidence-gating lifts accuracy from **75%
 > to 100%** by routing the ambiguous minority to a human. Zero deps:
 > `npm run eval`.
+>
+> Then I ran it against 24 ordinary product listings it had never seen,
+> and it escalated **22 of 24**. Not because they were hard; the
+> 8-word-per-category keyword lists were reverse-engineered from the
+> demo catalog's own text. `npm run eval:v2` is the benchmark that found
+> it, and a taxonomy built independently that gets 20 of 24 right with
+> zero wrong auto-tags.
 
 You've worked with the intern who's never once said "I'm not sure." Every
 answer arrives with total conviction, whether it's right or dead wrong.
@@ -52,6 +59,100 @@ gating escalates only the hard 42% to a human reviewer and reaches 100%
 accuracy. Same shape as a real ops tagging pipeline: most items never
 need a person, but the ones that do, actually get one instead of a
 guess wearing a confident voice.
+
+## The 12-item catalog and the keyword list were written together
+
+That 42% escalation rate looked suspicious once I thought about what a real
+catalog looks like. So I ran the tagger against 24 ordinary product listings
+(a 4K monitor, a wool coat, an espresso machine) it had never seen, none
+deliberately ambiguous:
+
+```bash
+npm run eval:v2
+```
+```
+catalog / tagger      auto rate  correct    wrong  escalated
+original / v1              58%        7        0          5
+adversarial / v1             8%        2        0         22
+```
+
+**8% auto rate. 22 of 24 escalate.** Not because those items are hard;
+they are not. `electronics` in the original taxonomy is `["battery",
+"charger", "bluetooth", "watch", "smart", "screen", "wireless", "usb"]`,
+eight words, and none of them are "monitor", "laptop", "headphone", or
+"speaker". Every clean item in the bundled 12-product catalog happens to
+hit 3-4 of its category's 8 keywords, because the keyword lists were
+written by reading the catalog. The benchmark measured whether the
+tagger could find the words it had been handed.
+
+### What "confidence gating" looks like when it can't find any words
+
+A system that escalates 92% of a catalog is not "safely deferring to a
+human", it is a human doing the job with extra steps. Two fixes:
+
+**A real, independently-built keyword list.** `taxonomy_v2.ts` has ~4x
+the vocabulary per category, written from general product-category
+knowledge *before* looking at the adversarial catalog above, specifically
+so the same mistake could not repeat itself against a second hand-picked
+list.
+
+**Stemming.** The original does exact-string matching, so "Rechargeable
+Batteries" and "Charging Cable" score zero on electronics because neither
+contains the literal substring "charger". A dozen common English suffixes,
+stripped from both the keywords and the product text before comparing,
+closes most of that gap without pulling in a dependency.
+
+```
+catalog / tagger      auto rate  correct    wrong  escalated
+original / v2              58%        7        0          5
+adversarial / v2            83%       20        0          4
+```
+
+**8% -> 83% auto rate, zero wrong.** The original catalog does not regress.
+
+### The bug in the first version of the fix
+
+A bigger keyword list made things *worse* at first: `score = hits /
+list.length`, so a category with 45 words scores a hit at 1/45 instead of
+1/8, and every confidence dropped through the floor. `original / v2`
+briefly read 0% auto rate: a longer, more useful taxonomy was
+self-punishing. Confidence is computed from the raw hit count now, not
+the fraction of an arbitrarily-sized list.
+
+### The other bug: broader recall also strengthens the wrong side of a tie
+
+Fixing the dilution bug pushed `original / v2` to 75% auto rate, one point
+higher than expected: one of the catalog's four deliberately-ambiguous
+items ("Kitchen Storage Folder Organizer") crossed the confidence line
+into a *wrong* auto-tag, because the expanded office list now matched
+"organizer", "folder", "paper", and the literal word "office", pulling it
+decisively away from kitchen. Broader coverage cuts both ways: it also
+strengthens whichever side of a genuine tie happens to gain more keywords.
+
+Fixed by raising the auto-tag threshold to 0.55, tuned against the
+original catalog and the adversarial one only, before the holdout below
+had been evaluated even once. `original / v2` above reflects that
+threshold: 58% auto rate, matching v1 exactly, with zero wrong.
+
+### Held out, run once
+
+`taxonomy_v2.ts`, the stemmer, and the 0.55 threshold were all frozen
+before `HOLDOUT_CATALOG` (15 more ordinary listings) was written. It was
+evaluated a single time:
+
+```
+catalog / tagger      auto rate  correct    wrong  escalated
+holdout / v1                 7%        1        0         14
+holdout / v2                 67%        10        0          5
+```
+
+Zero wrong auto-tags, same as the other two catalogs.
+
+### Limits
+
+- **~4x more keywords is still not exhaustive.** This closes the gap between "built for a 12-item demo" and "works on ordinary text", not the gap to a real classifier.
+- **Stemming is suffix-stripping, not a real stemmer.** It fixes the common cases (`-ing`, `-er`, `-ed`, `-s`) and nothing irregular.
+- **The threshold (0.55) is tuned on synthetic catalogs, three of them now.** Treat it as a starting point, not a calibrated production value.
 
 ## Install
 

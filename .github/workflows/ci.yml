@@ -7,6 +7,41 @@ on:
     branches: [main]
 
 jobs:
+  adversarial:
+    # The taxonomy can regress silently: it keeps returning decisions, they
+    # are just wrong or useless (escalate-everything). This fails the build
+    # if auto-tag coverage collapses on realistic text, or if any catalog
+    # gets a wrong auto-tag.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run coverage benchmark
+        run: npx tsx src/eval_v2.ts
+      - name: Assert coverage and zero wrong auto-tags
+        run: |
+          cat > ci_check.mts <<'EOF'
+          import { buildCoverageReport } from "./src/eval_v2.js";
+          const report = buildCoverageReport();
+          for (const [name, r] of Object.entries(report)) {
+            if (r.v2.autoWrong !== 0) {
+              throw new Error(name + ": v2 auto-tagged something wrong: " + JSON.stringify(r.v2));
+            }
+          }
+          if (report.adversarial.v2.autoRate < 0.6) {
+            throw new Error("adversarial auto rate regressed: " + report.adversarial.v2.autoRate);
+          }
+          if (report.holdout.v2.autoRate < 0.4) {
+            throw new Error("holdout auto rate regressed: " + report.holdout.v2.autoRate);
+          }
+          console.log("coverage and zero-wrong-autos hold");
+          EOF
+          npx tsx ci_check.mts && rm ci_check.mts
+
   test:
     runs-on: ubuntu-latest
     strategy:
