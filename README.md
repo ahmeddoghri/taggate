@@ -2,7 +2,6 @@
 
 **Confidence-gated multi-agent tagging with human-in-the-loop escalation.**
 
-![CI](https://github.com/ahmeddoghri/taggate/actions/workflows/ci.yml/badge.svg)
 ![tests](https://img.shields.io/badge/tests-29%20passing-brightgreen)
 ![typescript](https://img.shields.io/badge/typescript-5.6-blue)
 ![deps](https://img.shields.io/badge/runtime%20deps-none-success)
