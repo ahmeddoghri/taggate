@@ -2,10 +2,13 @@
 
 **Confidence-gated multi-agent tagging with human-in-the-loop escalation.**
 
-![tests](https://img.shields.io/badge/tests-29%20passing-brightgreen)
+[![tests](https://github.com/ahmeddoghri/taggate/actions/workflows/tests.yml/badge.svg)](https://github.com/ahmeddoghri/taggate/actions/workflows/tests.yml)
 ![typescript](https://img.shields.io/badge/typescript-5.6-blue)
 ![deps](https://img.shields.io/badge/runtime%20deps-none-success)
 ![license](https://img.shields.io/badge/license-MIT-black)
+[![case study](https://img.shields.io/badge/case%20study-adoghri.com-e0703e)](https://adoghri.com/project-9.html)
+
+![taggate](docs/cover.jpg)
 
 > **Auto-tag the confident cases, escalate only the genuinely ambiguous
 > ones.** In the benchmark, confidence-gating lifts accuracy from **75%
@@ -220,7 +223,7 @@ system) for production.
 ## Tests
 
 ```bash
-npm install && npm test      # 8 passing
+npm install && npm test      # 29 passing
 ```
 
 ## More in this series
