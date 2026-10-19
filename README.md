@@ -1,4 +1,4 @@
-# 🏷️ TagGate
+# taggate
 
 **Confidence-gated multi-agent tagging with human-in-the-loop escalation.**
 
@@ -28,7 +28,7 @@ An auto-tagger that always guesses has the same personality disorder: it
 is wrong exactly as often as it's overconfident, and it never tells you
 which one it's being right now.
 
-TagGate scores its own confidence as the **margin** between its top and
+taggate scores its own confidence as the **margin** between its top and
 runner-up category, not just "did I find a match," and routes anything
 below threshold to a human instead of silently mislabeling something
 genuinely ambiguous. A "smart watch band" is legitimately both
