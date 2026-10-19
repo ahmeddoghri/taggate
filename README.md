@@ -1,6 +1,6 @@
 # taggate
 
-**Confidence-gated multi-agent tagging with human-in-the-loop escalation.**
+**Confidence-gated tagging with human-in-the-loop escalation: auto-tag what it is sure of, hand the rest to a reviewer.**
 
 [![tests](https://github.com/ahmeddoghri/taggate/actions/workflows/tests.yml/badge.svg)](https://github.com/ahmeddoghri/taggate/actions/workflows/tests.yml)
 ![typescript](https://img.shields.io/badge/typescript-5.6-blue)

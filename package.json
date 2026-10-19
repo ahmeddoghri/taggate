@@ -1,7 +1,7 @@
 {
   "name": "taggate",
   "version": "0.1.0",
-  "description": "Confidence-gated multi-agent tagging pipeline with human-in-the-loop escalation.",
+  "description": "Confidence-gated tagging with human-in-the-loop escalation.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
     "eval:v2": "tsx src/eval_v2.ts",
     "example": "tsx examples/quickstart.ts"
   },
-  "keywords": ["llm", "agents", "tagging", "human-in-the-loop", "confidence", "langgraph", "ai"],
+  "keywords": ["llm", "agents", "tagging", "human-in-the-loop", "confidence", "ai"],
   "license": "MIT",
   "author": "Ahmed Doghri",
   "devDependencies": {
